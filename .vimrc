@@ -76,6 +76,8 @@ call plug#begin('~/.vim/plugged')
 "Plug 'Shougo/neomru.vim'
 " カラースキームmolokai
 Plug 'tomasr/molokai'
+"カラースキームhybrid
+Plug 'w0ng/vim-hybrid'
 " ステータスラインの表示内容強化
 Plug 'itchyny/lightline.vim'
 " ファイルをtree表示してくれる
@@ -91,11 +93,19 @@ call plug#end()
 " molokaiの設定
 "----------------------------------------------------------
 
-colorscheme molokai " カラースキームにmolokaiを設定する
+"colorscheme molokai " カラースキームにmolokaiを設定する
 
-
-set t_Co=256 " iTerm2など既に256色環境なら無くても良い
+"set t_Co=256 " iTerm2など既に256色環境なら無くても良い
 syntax enable " 構文に色を付ける
+
+"----------------------------------------------------------
+"hybridの設定
+"----------------------------------------------------------
+
+"let g:hybrid_custom_term_colors = 1
+"let g:hybrid_reduced_contrast = 1 " Remove this line if using the default palette.
+set background=dark
+colorscheme hybrid
 
 "----------------------------------------------------------
 " ステータスラインの設定
