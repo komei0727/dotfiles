@@ -1,0 +1,76 @@
+color default           250             234
+color 'Author '         15              default
+color 'Commit: '        242             default
+color 'Merge: '         45              default
+color id                167             default
+color date              242             default
+color graph-commit      161             default
+color status            15              default
+color delimiter         90              default
+color cursor            234             7
+color help-group        161             default
+color main-tracked      105             default             bold
+color cursor            226             94
+color title-focus       234             250
+color title-blur        234             250
+color diff-stat         45              default
+color diff-index        14              default
+color diff-add          40              default
+color diff-del          161             default
+color diff-chunk        190             default
+
+set main-view   = date id author:email-user commit-title:graph=yes,refs=yes
+set blame-view  = date:default author:email-user id:yes,color line-number:yes,interval=1 text
+set pager-view  = line-number:yes,interval=1 text
+set stage-view  = line-number:yes,interval=1 text
+set log-view    = line-number:yes,interval=1 text
+set blob-view   = line-number:yes,interval=1 text
+set diff-view   = line-number:yes,interval=1 text:yes,commit-title-overflow=no
+
+# set vertical-split = yes
+set vertical-split = no
+# set vertical-split = auto
+
+set line-graphics = utf-8
+# set tab-size = 4
+set tab-size = 2
+# set ignore-space = all
+set ignore-space = at-eol
+set ignore-case = true
+set split-view-height = 80%
+set diff-options = -m --first-parent
+set mouse = true
+set editor-line-number = yes
+set refresh-mode = auto
+#set refresh-mode = after-command
+#set refresh-mode = periodic
+#set refresh-interval = 1
+set diff-highlight = true
+
+color diff-header       default red
+color diff-chunk        black   white
+
+# set key 'g' / goto file top
+bind generic g      move-first-line
+
+# set key 'G' / goto file bottom
+bind generic G      move-last-line
+bind main    G      move-last-line
+
+# set key 'E'
+bind generic E      view-grep
+
+# set key 'F'
+bind generic F      ?git fetch %(remote)
+bind main    F      ?git fetch %(remote)
+
+# set key 'U'
+bind generic U      ?git pull %(remote)
+
+# set key 'C'
+bind generic C      !git commit
+#bind refs    C      !git commit
+bind main    C      !git commit
+
+# set key 'P'
+bind generic P      ?git push -u %(remote) %(repo:head)
