@@ -75,7 +75,7 @@ call plug#begin('~/.vim/plugged')
 " Unite.vimで最近使ったファイルを表示できるようにする
 "Plug 'Shougo/neomru.vim'
 " カラースキームmolokai
-Plug 'tomasr/molokai'
+"Plug 'tomasr/molokai'
 "カラースキームhybrid
 Plug 'w0ng/vim-hybrid'
 " ステータスラインの表示内容強化
@@ -85,6 +85,8 @@ Plug 'scrooloose/nerdtree'
 " 末尾の全角と半角の空白文字を赤くハイライト
 Plug 'bronson/vim-trailing-whitespace'
 "Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
+"ウィンドウサイズの調整"
+Plug 'simeji/winresizer'
 
 
 call plug#end()
@@ -116,3 +118,11 @@ set showcmd " 打ったコマンドをステータスラインの下に表示
 set ruler " ステータスラインの右側にカーソルの現在位置を表示する
 
 nnoremap <silent><C-e> :NERDTreeToggle<CR>
+
+let g:winresizer_start_key = '<C-T>'
+let g:winresizer_vert_resize = 1
+let g:winresizer_horiz_resize = 1
+
+"C-l,C-hでタブ間の移動"
+map <C-l> gt
+map <C-h> gT
