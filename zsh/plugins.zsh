@@ -3,7 +3,7 @@
 zinit ice depth=1; zinit light romkatv/powerlevel10k
 
 ### syntax-highlighting ###
-zinit light zdharma/fast-syntax-highlighting
+zinit light zdharma-continuum/fast-syntax-highlighting
 
 ### auto suggestions ###
 zinit light zsh-users/zsh-autosuggestions
