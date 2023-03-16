@@ -4,10 +4,6 @@ zinit wait lucid blockf light-mode for \
     @'zsh-users/zsh-completions' \
     @'zdharma-continuum/fast-syntax-highlighting'
 
-### bat ###
-zinit ice as"program" from"gh-r" mv"bat* -> bat" pick"bat/bat"
-zinit light sharkdp/bat
-
 ### zsh-replace-multiple-dots ###
 __replace_multiple_dots_atload() {
     replace_multiple_dots_exclude_go() {
