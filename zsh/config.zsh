@@ -30,3 +30,11 @@ setopt auto_cd
 
 # disable ctrl+s, ctrl+q
 setopt no_flow_control
+
+# pyenv paths
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init --path)"
+
+# pipenv
+export PIPENV_VENV_IN_PROJECT=true

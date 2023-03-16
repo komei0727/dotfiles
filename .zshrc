@@ -9,7 +9,7 @@ fi
 if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
     print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
     command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
-    command git clone https://github.com/zdharma/zinit "$HOME/.zinit/bin" && \
+    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.zinit/bin" && \
         print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
         print -P "%F{160}▓▒░ The clone has failed.%f%b"
 fi
@@ -25,3 +25,13 @@ source $SCRIPT_DIR/zsh/plugins.zsh
 source $SCRIPT_DIR/zsh/config.zsh
 source $SCRIPT_DIR/zsh/p10k.zsh
 source $SCRIPT_DIR/zsh/alias.zsh
+
+
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+export PATH="$PATH:/usr/local/texlive/2022/bin/x86_64-linux"
+export MANPATH="$MANPATH:/usr/local/texlive/2022/texmf-dist/doc/man"
+export INFOPATH="$INFOPATH:/usr/local/texlive/2022/texmf-dist/doc/info"
