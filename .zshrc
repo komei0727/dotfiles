@@ -19,8 +19,14 @@ autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 ### End of Zinit's installer chunk
 
+### powerlevel10k ###
+zinit ice depth=1; zinit light romkatv/powerlevel10k
+
 SCRIPT_DIR=$HOME/dotfiles
 
+zinit wait lucid light-mode as'null' \
+    atinit'source "$SCRIPT_DIR/zsh/plugins.zsh"' \
+    for 'zdharma-continuum/null'
 source $SCRIPT_DIR/zsh/plugins.zsh
 source $SCRIPT_DIR/zsh/config.zsh
 source $SCRIPT_DIR/zsh/p10k.zsh
