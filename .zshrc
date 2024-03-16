@@ -28,6 +28,7 @@ zinit wait lucid light-mode as'null' \
     atinit'source "$SCRIPT_DIR/zsh/plugins.zsh"' \
     for 'zdharma-continuum/null'
 source $SCRIPT_DIR/zsh/plugins.zsh
+source /home/takabayashi/.local/share/zinit/plugins/junegunn---fzf/shell/key-bindings.zsh
 source $SCRIPT_DIR/zsh/config.zsh
 source $SCRIPT_DIR/zsh/p10k.zsh
 source $SCRIPT_DIR/zsh/alias.zsh

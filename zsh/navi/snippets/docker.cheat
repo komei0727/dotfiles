@@ -1,0 +1,12 @@
+% docker
+# Run Container
+docker container run --it <image> zsh
+
+# Exec Container
+docker exec <container>
+
+# Delete image
+docker rmi <image>
+
+$ image: docker images | awk '{print$1}'
+$ container: docker ps | awk '{print$1}'
