@@ -1,0 +1,40 @@
+shell = "zsh"
+
+[templates]
+defer = "{{ hooks?.pre | nl}}{% for file in files %}zsh-defer -t 0.0001 source \"{{ file }}\"\n{% endfor %}{{ hooks?.post | nl }}"
+
+[plugins.zsh-defer]
+github = "romkatv/zsh-defer"
+hooks.post = '''
+zsh-defer source $ZSHRC_DIR/config.zsh
+zsh-defer source $ZSHRC_DIR/alias.zsh
+zsh-defer -t 0.001 autoload -Uz compinit
+zsh-defer -t 0.001 compinit
+'''
+
+[plugins.powerlevel10k]
+github = "romkatv/powerlevel10k"
+use = ['{{ name }}.zsh-theme']
+hooks.pre = '''
+ZLE_RPROMPT_INDENT=0
+source $ZSHRC_DIR/p10k.zsh'''
+
+[plugins.fzf-tab]
+github = "Aloxaf/fzf-tab"
+apply = ["defer"]
+
+[plugins.syntax-highlight]
+github = "z-shell/F-Sy-H"
+apply = ["defer"]
+
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+apply = ["defer"]
+
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+apply = ["defer"]
+
+[plugins.zsh-abbr]
+github = "olets/zsh-abbr"
+apply = ["defer"]

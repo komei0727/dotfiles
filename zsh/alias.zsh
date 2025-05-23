@@ -23,7 +23,8 @@ fgc() {
 ### tmux ###
 function navipopup() {
   path_local=$PATH
-  tmux popup "\
+  window=$(tmux display -p -F '#S:#I.#P')
+  tmux popup -E -w 95% -h 95% "
     export PATH=$PATH:$path_local && \
     export NAVI_CONFIG='$HOME/dotfiles/zsh/navi/config.yaml' && \
     window=$(tmux display -p -F '#S:#I.#P') && \
@@ -32,6 +33,14 @@ function navipopup() {
     zsh -c 'navi --print | tr -d '\n' | tmux load-buffer -b tmp -' && tmux paste-buffer -drp -t $window -b tmp \
   "
 }
+zle -N navipopup
+bindkey '^N' navipopup
+
+# eza
+abbr ls="eza --group-directories-first --icons=always"
+abbr ll="eza --group-directories-first -al --header --icons=always --color-scale --git --time-style=long-iso"
+abbr la="eza --group-directories-first --icons=always -a"
+abbr tree="eza --group-directories-first -T --icons=always"
 
 ### ghq ###
 function create_session_with_ghq() {

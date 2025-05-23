@@ -1,0 +1,20 @@
+[user]
+    name = "komei0727"
+    email = "krymei072730@gmail.com"
+[color]
+    ui = true
+[core]
+    editor = code --wait
+    autocrlf = false
+    ignorecase = false
+    quotepath = false
+    safecrlf = true
+[init]
+    defaultBranch = main
+[pull]
+    rebase = true
+[push]
+    default = simple
+    autoSetupRemote = true
+[alias]
+    push = push --force-with-lease --force-if-includes

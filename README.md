@@ -1,26 +1,19 @@
-# シンボリックリンクの配置
-ホームディレクトリにこのレポジトリを置き以下のコマンドを実行
+## dotfiles盆栽
+
+## 利用方法
+### 1. sheldonとHomebrewのインストール
+- shelldon
 ```
-$ cd ~/dotfiles
-$ ./deploy.sh
+% curl --proto '=https' -fLsS https://rossmacarthur.github.io/install/crate.sh \
+    | bash -s -- --repo rossmacarthur/sheldon --to ~/.local/bin
+```
+- Homebrew
+```
+% /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-# zshrc
-## zinitのインストール
-- プラグイン管理のためのツール
-- `sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma/zinit/master/doc/install.sh)"
-`を実行
-- `source ~/.zshrc'を実行するとプラグインがインストールされる
-
-## powerlevel10k
-- ターミナルの見た目を変えるプラグイン
-- Nerd Fontsという種類のフォントを設定する必要がある
-- おすすめは[HackGenNerd Console](https://qiita.com/tawara_/items/374f3ca0a386fab8b305)
-- 使用しているターミナルでフォントを変更
-- windows terminalの場合は[これ](https://marumalog.hatenablog.jp/entry/2020/12/13/162203)
-
-# vimrc
-## plug.vimのインストール
-- [公式リポジトリ](https://github.com/junegunn/vim-plug)を参照
-## PlugInstall
-- vimを起動しコマンドで`:PlugInstall`と叩くとプラグインがインストールされる
+### 2. 環境構築
+下記コマンドで一括で環境構築が可能
+```
+% make all
+```
