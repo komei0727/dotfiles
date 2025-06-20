@@ -41,8 +41,10 @@ source "/home/linuxbrew/.linuxbrew/opt/fzf/shell/key-bindings.zsh"
 export NAVI_CONFIG="$ZSHRC_DIR/navi/config.yaml"
 
 ### エイリアス設定 ###
-alias vz="vim ~/.zshrc"
-alias vv="vim ~/.vimrc"
+alias vim="nvim"
+alias vi="nvim"
+alias vz="nvim ~/.zshrc"
+alias vn="nvim ~/.config/nvim/init.lua"
 alias sz="source ~/.zshrc"
 
 ### fzf ###
