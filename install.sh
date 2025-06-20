@@ -2,7 +2,12 @@
 
 set -e
 
-DOTFILES_DIR="${HOME}/dotfiles"
+# Allow environment variables to override defaults
+DOTFILES_DIR="${DOTFILES_DIR:-${HOME}/dotfiles}"
+DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/ktakabay/dotfiles.git}"
+SHELDON_INSTALL_DIR="${SHELDON_INSTALL_DIR:-${HOME}/.local/bin}"
+SKIP_CHSH="${SKIP_CHSH:-0}"
+
 REQUIRED_COMMANDS=("git" "curl" "make")
 
 GREEN='\033[0;32m'
@@ -48,12 +53,14 @@ install_homebrew() {
     # Add Homebrew to PATH based on OS
     case "$(detect_os)" in
         "linux"|"wsl")
-            echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> "${HOME}/.zprofile"
-            eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+            HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/home/linuxbrew/.linuxbrew}"
+            echo "eval \"$(${HOMEBREW_PREFIX}/bin/brew shellenv)\"" >> "${HOME}/.zprofile"
+            eval "$(${HOMEBREW_PREFIX}/bin/brew shellenv)"
             ;;
         "macos")
-            echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "${HOME}/.zprofile"
-            eval "$(/opt/homebrew/bin/brew shellenv)"
+            HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-/opt/homebrew}"
+            echo "eval \"$(${HOMEBREW_PREFIX}/bin/brew shellenv)\"" >> "${HOME}/.zprofile"
+            eval "$(${HOMEBREW_PREFIX}/bin/brew shellenv)"
             ;;
     esac
 
@@ -68,12 +75,12 @@ install_sheldon() {
 
     log_info "Installing Sheldon..."
     curl --proto '=https' -fLsS https://rossmacarthur.github.io/install/crate.sh \
-        | bash -s -- --repo rossmacarthur/sheldon --to ~/.local/bin
+        | bash -s -- --repo rossmacarthur/sheldon --to "$SHELDON_INSTALL_DIR"
 
     # Add to PATH if not already present
-    if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "${HOME}/.zprofile"
-        export PATH="$HOME/.local/bin:$PATH"
+    if [[ ":$PATH:" != *":$SHELDON_INSTALL_DIR:"* ]]; then
+        echo "export PATH=\"$SHELDON_INSTALL_DIR:\$PATH\"" >> "${HOME}/.zprofile"
+        export PATH="$SHELDON_INSTALL_DIR:$PATH"
     fi
 
     log_success "Sheldon installed"
@@ -86,13 +93,18 @@ clone_dotfiles() {
     fi
 
     log_info "Cloning dotfiles repository..."
-    git clone https://github.com/ktakabay/dotfiles.git "$DOTFILES_DIR"
+    git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
     log_success "Dotfiles cloned"
 }
 
 setup_zsh() {
     if [ "$SHELL" = "$(which zsh)" ]; then
         log_success "ZSH is already the default shell"
+        return 0
+    fi
+
+    if [ "$SKIP_CHSH" = "1" ]; then
+        log_info "Skipping shell change (SKIP_CHSH=1)"
         return 0
     fi
 
@@ -144,11 +156,7 @@ main() {
 
     # WSL-specific setup
     if [ "$OS" = "wsl" ]; then
-        log_info "Running WSL-specific setup..."
-        if [ -f "${DOTFILES_DIR}/windows_config/link.sh" ]; then
-            "${DOTFILES_DIR}/windows_config/link.sh"
-            log_success "Windows config linked"
-        fi
+        log_info "WSL environment detected - Windows integration is handled by .config/link.sh"
     fi
 
     echo

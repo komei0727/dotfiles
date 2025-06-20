@@ -3,8 +3,9 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-CONFIG_DIR="${HOME}/.config"
-MERGED_DIR="${SCRIPT_DIR}/_merged"
+CONFIG_DIR="${CONFIG_DIR:-${HOME}/.config}"
+MERGED_DIR="${MERGED_DIR:-${SCRIPT_DIR}/_merged}"
+WINDOWS_USER="${WINDOWS_USER:-User}"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -118,6 +119,8 @@ create_windows_links() {
         elif [[ "$line" =~ target:\ (.+) ]]; then
             target_path="${BASH_REMATCH[1]}"
             target_path="${target_path// /}"  # Remove spaces
+            # Replace "User" with actual Windows username
+            target_path="${target_path//\/Users\/User\//\/Users\/${WINDOWS_USER}\/}"
             
             if [ -n "$source_full" ] && [ -f "$source_full" ]; then
                 # Create parent directory
