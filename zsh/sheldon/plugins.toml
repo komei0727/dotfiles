@@ -6,8 +6,7 @@ defer = "{{ hooks?.pre | nl}}{% for file in files %}zsh-defer -t 0.0001 source \
 [plugins.zsh-defer]
 github = "romkatv/zsh-defer"
 hooks.post = '''
-zsh-defer source $ZSHRC_DIR/config.zsh
-zsh-defer source $ZSHRC_DIR/alias.zsh
+zsh-defer source $ZSHRC_DIR/lazy.zsh
 zsh-defer -t 0.001 autoload -Uz compinit
 zsh-defer -t 0.001 compinit
 '''
@@ -33,8 +32,4 @@ apply = ["defer"]
 
 [plugins.zsh-autosuggestions]
 github = "zsh-users/zsh-autosuggestions"
-apply = ["defer"]
-
-[plugins.zsh-abbr]
-github = "olets/zsh-abbr"
 apply = ["defer"]

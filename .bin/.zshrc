@@ -32,4 +32,18 @@ fi
 source $sheldon_cache
 unset sheldon_cache sheldon_toml
 
+# Load platform-specific configurations
+case "$OSTYPE" in
+  linux*)
+    if grep -qi microsoft /proc/version 2>/dev/null; then
+      zsh-defer source $ZSHRC_DIR/wsl.zsh
+    else
+      zsh-defer source $ZSHRC_DIR/linux.zsh
+    fi
+    ;;
+  darwin*)
+    zsh-defer source $ZSHRC_DIR/darwin.zsh
+    ;;
+esac
+
 zsh-defer zsh-defer unfunction source
