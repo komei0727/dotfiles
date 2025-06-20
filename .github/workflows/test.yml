@@ -26,7 +26,7 @@ jobs:
           ~/Library/Caches/Homebrew
           /home/linuxbrew/.linuxbrew
           ~/.cache/Homebrew
-        key: ${{ runner.os }}-homebrew-${{ hashFiles('.github/workflows/Brewfile.test') }}
+        key: ${{ runner.os }}-homebrew-${{ hashFiles('.bin/.Brewfile.*', '.github/workflows/Brewfile.test') }}
         restore-keys: |
           ${{ runner.os }}-homebrew-
 
@@ -35,22 +35,25 @@ jobs:
       run: |
         rm -rf ~/.zshrc ~/.vimrc ~/.gitconfig ~/.config 2>/dev/null || true
 
+    # Replace Brewfiles with test versions
+    - name: Setup test Brewfiles
+      run: |
+        # Backup original Brewfiles
+        cp .bin/.Brewfile.linux .bin/.Brewfile.linux.bak
+        cp .bin/.Brewfile.darwin .bin/.Brewfile.darwin.bak
+        
+        # Replace with test Brewfile
+        cp .github/workflows/Brewfile.test .bin/.Brewfile.linux
+        cp .github/workflows/Brewfile.test .bin/.Brewfile.darwin
+
     # Test full installation including Homebrew and Sheldon
     - name: Test full dotfiles installation
       env:
         SKIP_CHSH: 1
         DOTFILES_DIR: ${{ github.workspace }}
       run: |
-        # Install Homebrew and Sheldon first
-        ./install.sh || true  # May fail on brew step, continue anyway
-        
-        # Install minimal test packages instead of full Brewfiles
-        echo "=== Installing test packages ==="
-        brew bundle --file=.github/workflows/Brewfile.test
-        
-        # Complete the setup
-        make link
-        make config
+        # Run the full installation script
+        ./install.sh
         
         # Verify installations
         echo "=== Verifying tool installations ==="
