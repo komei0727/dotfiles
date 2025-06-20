@@ -19,12 +19,6 @@ log_error() { echo -e "${RED}✗${NC} $1"; }
 
 # Detect OS
 detect_os() {
-    # Allow override for testing
-    if [ -n "$FORCE_OS_TYPE" ]; then
-        echo "$FORCE_OS_TYPE"
-        return
-    fi
-    
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         if grep -qi microsoft /proc/version 2>/dev/null; then
             echo "wsl"

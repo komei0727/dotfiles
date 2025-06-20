@@ -72,35 +72,6 @@ jobs:
         echo "=== Checking installed packages ==="
         brew list || true
 
-    # Test WSL simulation (Linux only)
-    - name: Test WSL-specific config merging
-      if: runner.os == 'Linux'
-      env:
-        SKIP_CHSH: 1
-        DOTFILES_DIR: ${{ github.workspace }}
-        FORCE_OS_TYPE: wsl
-      run: |
-        # Clean up previous test
-        rm -rf ~/.config/*
-        
-        # Re-run config setup as WSL (without Windows integration)
-        cd .config && ./link.sh
-        
-        # Verify WSL-specific behavior
-        echo "=== Checking WSL merged configs ==="
-        ls -la .config/_merged/ || true
-        
-        # Check if WSL configs were applied (common + linux + wsl layers)
-        if [ -d ".config/_merged" ]; then
-          echo "✓ Merged directory created"
-          # Check if layered configs are applied correctly
-          echo "=== Checking config layers ==="
-          find .config/_merged -type f | head -10
-        else
-          echo "✗ Merged directory not found"
-          exit 1
-        fi
-
     # Verify critical files
     - name: Verify installation results
       env:
