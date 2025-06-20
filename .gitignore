@@ -1,0 +1,19 @@
+# Generated directories
+.config/_merged/
+
+# Windows symlinks (actual files are in Windows)
+.config/wsl/windows_symlinks/*.json
+.config/wsl/windows_symlinks/*.toml
+
+# OS-specific files
+.DS_Store
+*.swp
+*~
+
+# IDE
+.idea/
+.vscode/
+
+# Backup files
+*.bak
+*.orig

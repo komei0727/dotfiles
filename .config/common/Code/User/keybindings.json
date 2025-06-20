@@ -1,0 +1,18 @@
+[
+    {
+        "key": "cmd+ctrl+l",
+        "command": "dendron.insertNoteLink",
+        "args": {
+          "multiSelect": true
+        }
+      },
+      {
+        "key": "alt+r",
+        "command": "remote-containers.reopenInContainer"
+      },
+      {
+        "key": "ctrl+]",
+        "command": "cursorRight",
+        "when": "editorTextFocus"
+      },
+]

@@ -1,0 +1,100 @@
+{
+  "editor.minimap.enabled": false,
+  "editor.renderControlCharacters": true,
+  "debug.console.fontSize": 14,
+  "editor.fontFamily": "'Hack Nerd Font', Menlo, Monaco, monospace",
+  "workbench.colorTheme": "Ayu Mirage Bordered",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "security.workspace.trust.untrustedFiles": "open",
+  "editor.fontSize": 14,
+  "editor.largeFileOptimizations": false,
+  "editor.suggestSelection": "first",
+  "editor.renderLineHighlight": "all",
+  "editor.cursorBlinking": "smooth",
+  "files.autoGuessEncoding": true,
+  "editor.bracketPairColorization.enabled": true,
+  "workbench.iconTheme": "ayu",
+  "workbench.editor.enablePreview": false,
+  "csv-preview.resizeColumns": "all",
+  "window.newWindowDimensions": "fullscreen",
+  "hediet.vscode-drawio.resizeImages": null,
+  "git.enableSmartCommit": true,
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": true,
+    "scminput": false,
+    "python": true
+  },
+  "editor.unicodeHighlight.ambiguousCharacters": false,
+  "dev.containers.dockerPath": "/Users/ktakabay/.rd/bin/docker",
+  "vim.insertModeKeyBindings": [
+    {
+      "before": ["j", "j"],
+      "after": ["<Esc>"]
+    }
+  ],
+  "vim.hlsearch": true,
+  "vim.useSystemClipboard": true,
+  "vim.statusBarColorControl": true,
+  "vim.statusBarColors.normal": ["#005f5f", "#fff"],
+  "vim.statusBarColors.insert": ["#5f0000", "#fff"],
+  "vim.statusBarColors.visual": ["#5f00af", "#fff"],
+  "vim.statusBarColors.visualline": ["#005f87", "#fff"],
+  "vim.statusBarColors.visualblock": ["#86592d", "#fff"],
+  "vim.statusBarColors.replace": ["#000000", "#fff"],
+  "vim.statusBarColors.commandlineinprogress": ["#86592d", "#fff"],
+  "vim.statusBarColors.searchinprogressmode": ["#86592d", "#fff"],
+  "vim.statusBarColors.easymotionmode": ["#86592d", "#fff"],
+  "vim.statusBarColors.easymotioninputmode": ["#86592d", "#fff"],
+  "vim.statusBarColors.surroundinputmode": ["#86592d", "#fff"],
+  "workbench.colorCustomizations": {
+    "statusBar.background": "#005f5f",
+    "statusBar.noFolderBackground": "#005f5f",
+    "statusBar.debuggingBackground": "#005f5f",
+    "statusBar.foreground": "#fff",
+    "statusBar.debuggingForeground": "#fff"
+  },
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": ["x"],
+      "after": ["\"", "_", "x"]
+    },
+    {
+      "before": ["s"],
+      "after": ["\"", "_", "s"]
+    },
+    {
+      "before": ["d"],
+      "after": ["\"", "_", "d"]
+    },
+    {
+      "before": ["c"],
+      "after": ["\"", "_", "c"]
+    }
+  ],
+  "vim.visualModeKeyBindingsNonRecursive": [
+    {
+      "before": ["p"],
+      "after": ["\"", "_", "d", "P"]
+    },
+    {
+      "before": ["s"],
+      "after": ["\"", "_", "s"]
+    }
+  ],
+  "notebook.lineNumbers": "on",
+  "github.copilot.editor.enableAutoCompletions": true,
+  "editor.defaultFormatter": "charliermarsh.ruff",
+  "notebook.defaultFormatter": "charliermarsh.ruff",
+  "editor.formatOnSave": true,
+  "notebook.formatOnSave.enabled": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.ruff": "explicit"
+  },
+  "notebook.codeActionsOnSave": {
+    "notebook.fixAll.ruff": "never"
+  },
+  "hediet.vscode-drawio.theme": "Kennedy"
+}
