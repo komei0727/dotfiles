@@ -1,6 +1,4 @@
 tap "cloudfoundry/tap"
-tap "homebrew/bundle"
-tap "homebrew/services"
 brew "ca-certificates"
 brew "coreutils"
 brew "asdf"

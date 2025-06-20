@@ -69,12 +69,12 @@ jobs:
     - name: Setup WSL simulation
       if: matrix.test_wsl && runner.os == 'Linux'
       run: |
-        # Create a fake /proc/version to simulate WSL
-        sudo mkdir -p /proc
-        echo "Linux version 5.10.0-19-amd64 Microsoft" | sudo tee /proc/version
-        
         # Create mock Windows directories
         mkdir -p /mnt/c/Users/TestUser/AppData/Roaming/{Code,Cursor,alacritty}/User
+        
+        # Create a temporary fake /proc/version for testing
+        mkdir -p /tmp/proc
+        echo "Linux version 5.10.0-19-amd64 Microsoft" > /tmp/proc/version
 
     - name: Test WSL-specific features
       if: matrix.test_wsl && runner.os == 'Linux'
@@ -82,6 +82,7 @@ jobs:
         SKIP_CHSH: 1
         DOTFILES_DIR: ${{ github.workspace }}
         WINDOWS_USER: TestUser
+        FORCE_OS_TYPE: wsl
       run: |
         # Clean up previous test
         rm -rf ~/.config/*
