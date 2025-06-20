@@ -13,14 +13,17 @@ zstyle ':completion:*' group-name ''
 ### select=2: 補完候補を一覧から選択する。補完候補が2つ以上なければすぐに補完する。
 zstyle ':completion:*:default' menu select=2
 #################################  OTHERS  #################################
-# automatically change directory when dir name is typed
+# ディレクトリ名を入力するだけで自動的にディレクトリを変更
 setopt auto_cd
 
-# disable ctrl+s, ctrl+q
+# ctrl+s, ctrl+qを無効化
 setopt no_flow_control
 
 # uv
 eval "$(uv generate-shell-completion zsh)"
+
+# mise
+eval "$(mise activate zsh)"
 
 # fzf
 export FZF_TMUX=1
