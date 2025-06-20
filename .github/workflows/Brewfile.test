@@ -1,0 +1,23 @@
+# Minimal Brewfile for testing
+# Contains only essential packages required for dotfiles setup to work
+
+# Core tools
+brew "git"
+brew "make"
+brew "zsh"
+
+# Essential packages used in setup
+brew "bat"      # Used by fzf preview
+brew "eza"      # Aliased as ls/ll/la/tree
+brew "fd"       # Used as FZF_DEFAULT_COMMAND
+brew "fzf"      # Used in multiple shell functions
+brew "mise"     # Runtime version manager (Node.js, Python)
+brew "navi"     # Interactive cheatsheet tool with tmux integration
+brew "neovim"   # Aliased as vim/vi
+brew "tmux"     # Terminal multiplexer with extensive config
+brew "uv"       # Python package manager with completions
+
+# macOS-specific essentials
+if OS.mac?
+  brew "coreutils"  # GNU utilities for Linux compatibility
+end
