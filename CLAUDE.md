@@ -11,7 +11,7 @@ This is a dotfiles repository for managing development environment configuration
 ### Environment Setup
 - `make all` - Complete environment setup (runs link, brew, and config targets)
 - `make link` - Symlinks main dotfiles from `.bin/` to `$HOME`
-- `make brew` - Installs packages via Homebrew using `.bin/.Brewfile`
+- `make brew` - Installs packages via Homebrew (automatically selects `.Brewfile.darwin` or `.Brewfile.linux` based on OS)
 - `make config` - Symlinks config files from `.config/` to `~/.config/`
 
 ### Manual Setup Requirements
@@ -28,7 +28,10 @@ curl --proto '=https' -fLsS https://rossmacarthur.github.io/install/crate.sh \
 ## Architecture and Structure
 
 ### Directory Organization
-- `.bin/` - Main dotfiles (`.zshrc`, `.vimrc`, `.gitconfig`, `.Brewfile`)
+- `.bin/` - Main dotfiles and platform-specific Brewfiles
+  - `.Brewfile.darwin` - macOS-specific packages
+  - `.Brewfile.linux` - Linux/WSL packages
+  - `.zshrc`, `.vimrc`, `.gitconfig` - Shell and editor configs
 - `.config/` - XDG config directory files with platform-specific structure
   - `common/` - Shared configurations for all platforms
   - `linux/` - Linux-specific configurations
