@@ -37,8 +37,6 @@ curl --proto '=https' -fLsS https://rossmacarthur.github.io/install/crate.sh \
   - `linux/` - Linux-specific configurations
   - `darwin/` - macOS-specific configurations
   - `wsl/` - WSL-specific configurations and Windows symlink mappings
-  - `_merged/` - Auto-generated merged configurations (not in Git)
-- `windows_config/` - Windows application configs accessed from WSL
 - `zsh/` - ZSH-specific configurations and plugins
 
 ### Platform-Specific Configuration Strategy
@@ -53,9 +51,7 @@ This repository uses a layered configuration approach to support multiple platfo
 1. **Main dotfiles**: `.bin/link.sh` symlinks all hidden files (except `.git`, `.github`, `.config`) to `$HOME`
 2. **Config files**: `.config/link.sh` merges platform-specific configs and creates symlinks:
    - Detects OS type (WSL, Linux, macOS)
-   - Copies `common/` configs to `_merged/`
    - Overlays platform-specific configs
-   - Creates symlinks from `~/.config/` to `_merged/`
 3. **Windows configs**: For WSL, syncs Windows application configs via `mapping.yaml`
 
 ### Key Components
