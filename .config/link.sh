@@ -4,18 +4,19 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONFIG_DIR="${CONFIG_DIR:-${HOME}/.config}"
-MERGED_DIR="${MERGED_DIR:-${SCRIPT_DIR}/_merged}"
 WINDOWS_USER="${WINDOWS_USER:-User}"
 
 # Colors for output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
+BLUE='\033[0;34m'
 NC='\033[0m'
 
 log_success() { echo -e "${GREEN}✓${NC} $1"; }
 log_info() { echo -e "${YELLOW}→${NC} $1"; }
 log_error() { echo -e "${RED}✗${NC} $1"; }
+log_debug() { echo -e "${BLUE}…${NC} $1"; }
 
 # Detect OS
 detect_os() {
@@ -32,141 +33,188 @@ detect_os() {
     fi
 }
 
-# Clean merged directory
-clean_merged() {
-    log_info "Cleaning merged directory..."
-    rm -rf "$MERGED_DIR"
-    mkdir -p "$MERGED_DIR"
-}
-
-# Copy or merge config files based on platform
-merge_configs() {
+# Get platform-specific directories based on OS
+get_platform_dirs() {
     local os_type="$1"
-    log_info "Merging configs for platform: $os_type"
+    local dirs=("common")
 
-    # First, copy all common configs
-    if [ -d "${SCRIPT_DIR}/common" ]; then
-        log_info "Copying common configs..."
-        cp -r "${SCRIPT_DIR}/common/"* "$MERGED_DIR/" 2>/dev/null || true
-    fi
+    case "$os_type" in
+        wsl)
+            dirs+=("linux" "wsl")
+            ;;
+        linux|darwin)
+            dirs+=("$os_type")
+            ;;
+    esac
 
-    # Then, overlay platform-specific configs
-    if [ "$os_type" = "wsl" ]; then
-        # For WSL, first apply linux configs, then wsl configs
-        if [ -d "${SCRIPT_DIR}/linux" ]; then
-            log_info "Applying Linux-specific configs..."
-            cp -r "${SCRIPT_DIR}/linux/"* "$MERGED_DIR/" 2>/dev/null || true
-        fi
-        if [ -d "${SCRIPT_DIR}/wsl" ]; then
-            log_info "Applying WSL-specific configs..."
-            cp -r "${SCRIPT_DIR}/wsl/"* "$MERGED_DIR/" 2>/dev/null || true
-        fi
-    elif [ "$os_type" = "linux" ] || [ "$os_type" = "darwin" ]; then
-        if [ -d "${SCRIPT_DIR}/${os_type}" ]; then
-            log_info "Applying ${os_type}-specific configs..."
-            cp -r "${SCRIPT_DIR}/${os_type}/"* "$MERGED_DIR/" 2>/dev/null || true
-        fi
-    fi
+    echo "${dirs[@]}"
 }
 
-# Create symlinks for regular configs
-create_regular_links() {
-    log_info "Creating symlinks in ~/.config..."
-    
-    # Find all directories in _merged
-    find "$MERGED_DIR" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
-        local dirname="$(basename "$dir")"
-        
+# Check if a config exists in platform-specific directories
+find_config_source() {
+    local config_name="$1"
+    local os_type="$2"
+    local platform_dirs=($(get_platform_dirs "$os_type"))
+
+    # Check in reverse order (most specific first)
+    for ((i=${#platform_dirs[@]}-1; i>=0; i--)); do
+        local dir="${platform_dirs[$i]}"
+        local path="${SCRIPT_DIR}/${dir}/${config_name}"
+
+        if [ -e "$path" ]; then
+            echo "$path"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+# Create direct symlink for a config
+create_direct_link() {
+    local source="$1"
+    local target="$2"
+    local config_name="$(basename "$source")"
+
+    # Create parent directory if needed
+    mkdir -p "$(dirname "$target")"
+
+    # Remove existing link or directory
+    if [ -L "$target" ] || [ -e "$target" ]; then
+        rm -rf "$target"
+    fi
+
+    # Create symlink
+    ln -fnsv "$source" "$target"
+    log_success "Linked $config_name"
+}
+
+# Main linking logic
+link_configs() {
+    local os_type="$1"
+    log_info "Setting up direct symlinks for platform: $os_type"
+
+    # Get all unique config names across all platform directories
+    local config_names=()
+    for dir in common linux darwin wsl; do
+        if [ -d "${SCRIPT_DIR}/${dir}" ]; then
+            while IFS= read -r -d '' config; do
+                config_names+=("$(basename "$config")")
+            done < <(find "${SCRIPT_DIR}/${dir}" -mindepth 1 -maxdepth 1 -print0)
+        fi
+    done
+
+    # Remove duplicates
+    config_names=($(printf '%s\n' "${config_names[@]}" | sort -u))
+
+    # Process each config
+    for config_name in "${config_names[@]}"; do
         # Skip special directories
-        if [ "$dirname" = "windows_symlinks" ]; then
+        if [[ "$config_name" == "windows_symlinks" || "$config_name" == "_merged" || "$config_name" == "link"* ]]; then
             continue
         fi
-        
-        local target="${CONFIG_DIR}/${dirname}"
-        
-        # Create parent directory if needed
-        mkdir -p "$(dirname "$target")"
-        
-        # Remove existing link or directory
-        if [ -L "$target" ] || [ -e "$target" ]; then
-            rm -rf "$target"
+
+        # Skip Windows app configs in WSL (handled by manual sync)
+        if [ "$os_type" = "wsl" ] && [[ "$config_name" =~ ^(Code|Cursor|alacritty)$ ]]; then
+            log_debug "Skipping $config_name (use config-sync for Windows apps)"
+            continue
         fi
-        
-        # Create symlink
-        ln -fnsv "$dir" "$target"
-        log_success "Linked $dirname"
+
+        # Find the most specific version of this config
+        if source_path=$(find_config_source "$config_name" "$os_type"); then
+            local target_path="${CONFIG_DIR}/${config_name}"
+            create_direct_link "$source_path" "$target_path"
+        fi
     done
 }
 
-# Create Windows symlinks for WSL
-create_windows_links() {
-    local mapping_file="${SCRIPT_DIR}/wsl/windows_symlinks/mapping.yaml"
-    
-    if [ ! -f "$mapping_file" ]; then
-        log_info "No Windows symlink mappings found, skipping..."
-        return
+# Handle complex configs that need merging
+handle_complex_configs() {
+    local os_type="$1"
+    local config_name="$2"
+
+    log_info "Complex config detected: $config_name (requires merging)"
+
+    # This function can be extended to handle specific cases where
+    # file-level merging is needed (e.g., appending to files)
+    # For now, we'll just use the most specific version
+    if source_path=$(find_config_source "$config_name" "$os_type"); then
+        local target_path="${CONFIG_DIR}/${config_name}"
+        create_direct_link "$source_path" "$target_path"
     fi
-    
-    log_info "Syncing Windows configurations for WSL..."
-    
-    # Parse mapping.yaml and create symlinks
-    # Note: This is a simple implementation. For production, consider using a YAML parser
-    while IFS= read -r line; do
-        if [[ "$line" =~ source:\ (.+) ]]; then
-            source_path="${BASH_REMATCH[1]}"
-            source_path="${source_path// /}"  # Remove spaces
-            source_full="${SCRIPT_DIR}/${source_path}"
-        elif [[ "$line" =~ target:\ (.+) ]]; then
-            target_path="${BASH_REMATCH[1]}"
-            target_path="${target_path// /}"  # Remove spaces
-            # Replace "User" with actual Windows username
-            target_path="${target_path//\/Users\/User\//\/Users\/${WINDOWS_USER}\/}"
-            
-            if [ -n "$source_full" ] && [ -f "$source_full" ]; then
-                # Create parent directory
-                mkdir -p "$(dirname "$target_path")"
-                
-                # Step 1: Copy config file to Windows side
-                log_info "Copying $(basename "$source_full") to Windows..."
-                cp -f "$source_full" "$target_path" 2>/dev/null || {
-                    log_error "Cannot copy to $target_path"
-                    continue
-                }
-                
-                # Step 2: Remove existing file in _merged and create symlink from Windows
-                if [ -f "$source_full" ]; then
-                    rm -f "$source_full"
-                fi
-                
-                # Create symlink from Windows file to _merged
-                ln -fnsv "$target_path" "$source_full"
-                log_success "Linked $(basename "$source_full") from Windows"
+}
+
+# Check if a config has platform-specific overrides
+has_overrides() {
+    local config_name="$1"
+    local count=0
+
+    for dir in common linux darwin wsl; do
+        if [ -e "${SCRIPT_DIR}/${dir}/${config_name}" ]; then
+            ((count++))
+        fi
+    done
+
+    [ $count -gt 1 ]
+}
+
+# Show status of current configuration
+show_status() {
+    log_info "Configuration Status:"
+
+    # Check for configs with overrides
+    local override_count=0
+    for dir in "${SCRIPT_DIR}"/common/*; do
+        if [ -d "$dir" ] || [ -f "$dir" ]; then
+            local config_name="$(basename "$dir")"
+            if has_overrides "$config_name"; then
+                ((override_count++))
+                log_debug "$config_name has platform-specific overrides"
             fi
         fi
-    done < "$mapping_file"
+    done
+
+    if [ $override_count -eq 0 ]; then
+        log_success "No platform-specific overrides detected (using direct symlinks)"
+    else
+        log_info "Found $override_count configs with platform-specific overrides"
+    fi
 }
+
 
 # Main execution
 main() {
     local os_type=$(detect_os)
-    
+
     log_info "Detected OS: $os_type"
-    
-    # Clean and prepare merged directory
-    clean_merged
-    
-    # Merge configs based on platform
-    merge_configs "$os_type"
-    
-    # Create regular symlinks
-    create_regular_links
-    
-    # Create Windows symlinks if WSL
-    if [ "$os_type" = "wsl" ]; then
-        create_windows_links
-    fi
-    
+
+    # Show current status
+    show_status
+
+    # Create direct symlinks
+    link_configs "$os_type"
+
     log_success "Configuration linking complete!"
+    log_info "All configs are now directly symlinked - edits will be reflected immediately"
 }
+
+# Add help option
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+    echo "Usage: $0 [OPTIONS]"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help     Show this help message"
+    echo "  -s, --status   Show configuration status only"
+    echo ""
+    echo "Environment Variables:"
+    echo "  CONFIG_DIR     Target directory for symlinks (default: ~/.config)"
+    echo "  WINDOWS_USER   Windows username for WSL (default: User)"
+    exit 0
+fi
+
+if [[ "$1" == "-s" ]] || [[ "$1" == "--status" ]]; then
+    show_status
+    exit 0
+fi
 
 main "$@"

@@ -1,0 +1,195 @@
+#!/bin/bash
+
+set -e
+
+# Determine script location
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+CONFIG_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+DOTFILES_DIR="$(cd "$CONFIG_DIR/.." && pwd)"
+WINDOWS_USER="${WINDOWS_USER:-User}"
+
+# Colors for output
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+log_success() { echo -e "${GREEN}✓${NC} $1"; }
+log_info() { echo -e "${YELLOW}→${NC} $1"; }
+log_error() { echo -e "${RED}✗${NC} $1"; }
+log_debug() { echo -e "${BLUE}…${NC} $1"; }
+
+# Check if running in WSL
+check_wsl() {
+    if ! grep -qi microsoft /proc/version 2>/dev/null; then
+        log_error "This command is only available in WSL environment"
+        exit 1
+    fi
+}
+
+# Load mapping configuration
+load_mappings() {
+    local mapping_file="${CONFIG_DIR}/wsl/windows_symlinks/mapping.yaml"
+    
+    if [ ! -f "$mapping_file" ]; then
+        log_error "No Windows config mappings found at $mapping_file"
+        exit 1
+    fi
+    
+    # Parse mapping.yaml into arrays
+    SOURCES=()
+    TARGETS=()
+    
+    local current_source=""
+    while IFS= read -r line; do
+        if [[ "$line" =~ source:\ (.+) ]]; then
+            source_path="${BASH_REMATCH[1]}"
+            source_path="${source_path// /}"
+            current_source="${CONFIG_DIR}/${source_path}"
+        elif [[ "$line" =~ target:\ (.+) ]]; then
+            if [ -n "$current_source" ]; then
+                target_path="${BASH_REMATCH[1]}"
+                target_path="${target_path// /}"
+                target_path="${target_path//\/Users\/User\//\/Users\/${WINDOWS_USER}\/}"
+                SOURCES+=("$current_source")
+                TARGETS+=("$target_path")
+                current_source=""
+            fi
+        fi
+    done < "$mapping_file"
+}
+
+# Pull configs from Windows to WSL
+pull_configs() {
+    log_info "Pulling configurations from Windows to WSL..."
+    
+    for i in "${!SOURCES[@]}"; do
+        local source="${SOURCES[$i]}"
+        local target="${TARGETS[$i]}"
+        
+        if [ -f "$target" ]; then
+            mkdir -p "$(dirname "$source")"
+            if cp -f "$target" "$source" 2>/dev/null; then
+                log_success "Updated $(basename "$source")"
+            else
+                log_error "Failed to copy $(basename "$source")"
+            fi
+        else
+            log_debug "Windows file not found: $(basename "$target")"
+        fi
+    done
+}
+
+# Push configs from WSL to Windows
+push_configs() {
+    log_info "Pushing configurations from WSL to Windows..."
+    
+    for i in "${!SOURCES[@]}"; do
+        local source="${SOURCES[$i]}"
+        local target="${TARGETS[$i]}"
+        
+        if [ -f "$source" ]; then
+            mkdir -p "$(dirname "$target")"
+            if cp -f "$source" "$target" 2>/dev/null; then
+                log_success "Updated Windows $(basename "$target")"
+            else
+                log_error "Failed to copy $(basename "$target") from $source to $target"
+            fi
+        else
+            log_debug "Source file not found: $source"
+        fi
+    done
+}
+
+# Show sync status
+show_status() {
+    log_info "Configuration sync status:"
+    
+    for i in "${!SOURCES[@]}"; do
+        local source="${SOURCES[$i]}"
+        local target="${TARGETS[$i]}"
+        local name="$(basename "$source")"
+        
+        if [ -f "$source" ] && [ -f "$target" ]; then
+            # Compare modification times
+            local source_time=$(stat -c %Y "$source" 2>/dev/null || echo 0)
+            local target_time=$(stat -c %Y "$target" 2>/dev/null || echo 0)
+            
+            if [ "$source_time" -gt "$target_time" ]; then
+                log_info "$name: WSL is newer"
+            elif [ "$target_time" -gt "$source_time" ]; then
+                log_info "$name: Windows is newer"
+            else
+                log_success "$name: In sync"
+            fi
+        elif [ -f "$source" ]; then
+            log_debug "$name: Only in WSL"
+        elif [ -f "$target" ]; then
+            log_debug "$name: Only in Windows"
+        else
+            log_error "$name: Missing"
+        fi
+    done
+}
+
+# Show diff between WSL and Windows configs
+show_diff() {
+    local file_pattern="${1:-}"
+    
+    for i in "${!SOURCES[@]}"; do
+        local source="${SOURCES[$i]}"
+        local target="${TARGETS[$i]}"
+        local name="$(basename "$source")"
+        
+        # Skip if pattern provided and doesn't match
+        if [ -n "$file_pattern" ] && [[ ! "$name" =~ $file_pattern ]]; then
+            continue
+        fi
+        
+        if [ -f "$source" ] && [ -f "$target" ]; then
+            if ! diff -q "$source" "$target" >/dev/null 2>&1; then
+                echo -e "\n${YELLOW}=== Differences in $name ===${NC}"
+                diff -u "$source" "$target" || true
+            fi
+        fi
+    done
+}
+
+# Main execution
+main() {
+    check_wsl
+    load_mappings
+    
+    case "${1:-}" in
+        pull)
+            pull_configs
+            ;;
+        push)
+            push_configs
+            ;;
+        status)
+            show_status
+            ;;
+        diff)
+            show_diff "${2:-}"
+            ;;
+        *)
+            echo "Usage: $(basename "$0") {pull|push|status|diff [pattern]}"
+            echo ""
+            echo "Commands:"
+            echo "  pull    - Pull configurations from Windows to WSL"
+            echo "  push    - Push configurations from WSL to Windows"
+            echo "  status  - Show sync status for all configs"
+            echo "  diff    - Show differences between WSL and Windows configs"
+            echo ""
+            echo "Examples:"
+            echo "  $(basename "$0") pull"
+            echo "  $(basename "$0") push"
+            echo "  $(basename "$0") diff settings.json"
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"

@@ -1,23 +1,23 @@
 # Windows symlink mappings for WSL
 # These mappings define where config files should be linked in the Windows filesystem
 # Windows username is assumed to be "User"
-# Format: source (in _merged) -> target (Windows path)
+# Format: source (relative to .config/) -> target (Windows path)
 
 mappings:
   # VS Code settings
-  - source: _merged/Code/User/settings.json
+  - source: common/Code/User/settings.json
     target: /mnt/c/Users/User/AppData/Roaming/Code/User/settings.json
   
-  - source: _merged/Code/User/keybindings.json
+  - source: common/Code/User/keybindings.json
     target: /mnt/c/Users/User/AppData/Roaming/Code/User/keybindings.json
   
   # Cursor settings
-  - source: _merged/Cursor/User/settings.json
+  - source: common/Cursor/User/settings.json
     target: /mnt/c/Users/User/AppData/Roaming/Cursor/User/settings.json
   
-  - source: _merged/Cursor/User/keybindings.json
+  - source: common/Cursor/User/keybindings.json
     target: /mnt/c/Users/User/AppData/Roaming/Cursor/User/keybindings.json
   
   # Alacritty settings
-  - source: _merged/alacritty/alacritty.toml
+  - source: common/alacritty/alacritty.toml
     target: /mnt/c/Users/User/AppData/Roaming/alacritty/alacritty.toml
