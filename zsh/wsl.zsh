@@ -10,30 +10,15 @@ if [[ $(uname -r) =~ WSL2 ]]; then
     export LIBGL_ALWAYS_INDIRECT=1
 fi
 
-# Windows paths integration
-alias explorer="explorer.exe"
-alias code="code.exe"
-alias notepad="notepad.exe"
+alias code="/mnt/c/Users/User/AppData/Local/Programs/Microsoft\ VS\ Code/bin/code"
 
-# WSL utilities
-alias wsl="wsl.exe"
-alias pwsh="pwsh.exe"
-alias cmd="cmd.exe"
+# Config sync aliases for Windows app configurations
+alias winsync="${HOME}/dotfiles/.config/wsl/config-sync"
+alias ws="winsync"
+alias wspull="winsync pull"
+alias wspush="winsync push"
+alias wsstatus="winsync status"
+alias wsdiff="winsync diff"
 
-# Clipboard integration
-alias pbcopy="clip.exe"
-alias pbpaste="powershell.exe -command 'Get-Clipboard' | tr -d '\r'"
-
-# Open Windows file explorer in current directory
-open() {
-    if [ $# -eq 0 ]; then
-        explorer.exe .
-    else
-        explorer.exe "$@"
-    fi
-}
-
-# Convert between WSL and Windows paths
-wslpath() {
-    /mnt/c/Windows/System32/wsl.exe wslpath "$@"
-}
+/usr/bin/keychain -q --nogui $HOME/.ssh/id_ed25519
+source $HOME/.keychain/$HOST-sh
