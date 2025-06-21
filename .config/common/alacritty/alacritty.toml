@@ -1,6 +1,6 @@
 [shell]
-program = "/Windows/System32/wsl.exe ~ -d Debian /usr/bin/zsh"
-args = ["-l", "-c", "/home/linuxbrew/.linuxbrew/bin/tmux a -t default -f ~/.config/tmux/tmux.conf || /home/linuxbrew/.linuxbrew/bin/tmux new -s default -f ~/.config/tmux/tmux.conf"]
+program = "/Windows/System32/wsl.exe"
+args = ["~", "-d", "Debian", "--", "/bin/bash", "-c", "~/bin/tmux-default.sh"]
 
 [cursor]
 blink_interval = 400
