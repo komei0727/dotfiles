@@ -1,6 +1,6 @@
 # dotfiles
 
-[![Test Dotfiles Setup](https://github.com/ktakabay/dotfiles/actions/workflows/test.yml/badge.svg)](https://github.com/ktakabay/dotfiles/actions/workflows/test.yml)
+[![Test Dotfiles Setup](https://github.com/komei0727/dotfiles/actions/workflows/test.yml/badge.svg)](https://github.com/komei0727/dotfiles/actions/workflows/test.yml)
 
 macOS、Linux、WSL環境に対応した開発環境構築用dotfilesです。
 
