@@ -1,8 +1,13 @@
 [tools]
+"cargo:similarity-ts" = "latest"
 node = "latest"
 "npm:@anthropic-ai/claude-code" = "latest"
+"npm:@google/gemini-cli" = "latest"
+"npm:@playwright/mcp" = "latest"
+"npm:@playwright/test" = "latest"
 "npm:ccusage" = "latest"
 python = "3.12.9"
+rust = "latest"
 
 [settings]
 python.uv_venv_auto = true
