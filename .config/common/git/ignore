@@ -3,9 +3,5 @@
 
 # Claude Code
 .claude/
-CLAUDE.md
-claude-checklist.yaml
-
-GEMINI.md
 
 .worktree/

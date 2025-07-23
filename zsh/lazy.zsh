@@ -108,18 +108,6 @@ gwt() {
   echo "Creating worktree from origin/deploy"
   git worktree add -b "$1" ".worktree/$1" "origin/deploy"
 
-  # Copy CLAUDE.md if it exists in the root
-  if [[ -f "$repo_root/CLAUDE.md" ]]; then
-    cp "$repo_root/CLAUDE.md" "$repo_root/.worktree/$1/"
-    echo "Copied CLAUDE.md to worktree"
-  fi
-
-  # Copy claude-checklist.yaml if it exists in the root
-  if [[ -f "$repo_root/claude-checklist.yaml" ]]; then
-    cp "$repo_root/claude-checklist.yaml" "$repo_root/.worktree/$1/"
-    echo "Copied claude-checklist.yaml to worktree"
-  fi
-
   if [[ -d "$repo_root/.claude" ]]; then
     cp -r "$repo_root/.claude" "$repo_root/.worktree/$1/"
     echo "Copied .claude directory to worktree"
